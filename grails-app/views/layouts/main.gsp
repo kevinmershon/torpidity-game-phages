@@ -17,9 +17,10 @@
     </head>
     <body>
         <g:layoutBody/>
-        <g:javascript library="application"/>
         <g:javascript library="raphael"/>
         <g:javascript library="arbor"/>
+        
+        <g:javascript library="application"/>
         <r:layoutResources />
     </body>
 </html>

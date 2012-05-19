@@ -1,11 +1,15 @@
 modules = {
-    application {
-        resource url: "js/application.js"
+    cs {
+        application {
+            resource url: "cs/application.coffee"
+        }
     }
-    arbor {
-        resource url: "js/arbor.js"
-    }
-    raphael {
-        resource url: "js/raphael-min.js"
+    js {
+        arbor {
+            resource url: "js/arbor.js"
+        }
+        raphael {
+            resource url: "js/raphael-min.js"
+        }
     }
 }
