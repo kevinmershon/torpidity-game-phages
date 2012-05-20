@@ -7,18 +7,34 @@ app = {
     background = this.screen.rect(0,0, 400,300)
     background.attr("fill", "#000000")
 
-  drawCircle: ->
-    circle = this.screen.circle(50, 40, 10)
+  drawCircle: (x, y, radius) ->
+    circle = this.screen.circle(x, y, radius)
     circle.attr({
-      fill: "#ff0000"
-      stroke: "#ffffff"
+      "fill": "#b4cdcd"
+      "stroke": "#000000"
+      "stroke-width": 1.5
     })
+    circle.mouseover( (event) ->
+      circle.data("glow", circle.glow({
+        width: 10,
+        color: "#ffffff"
+      }))
+    )
+    circle.mouseout( (event) ->
+      glow = circle.data("glow")
+      glow.remove()
+      circle.data("glow", null)
+    )
     circle.click(
       (event) ->
-        alert "sup"
+        circle.stop().animate({
+          cx: 200
+          cy: 150
+          r: 25
+        }, 350, "<>")
     )
 }
 
 $(document).ready ->
   app.init()
-  app.drawCircle()
+  app.drawCircle(50, 40, 10)
