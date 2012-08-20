@@ -2,15 +2,21 @@ package org.torpidity.core
 
 import static org.junit.Assert.*
 
-import grails.test.mixin.*
-import grails.test.mixin.support.*
+import org.codehaus.groovy.grails.plugins.codecs.SHA1Codec
+
+import grails.test.GrailsUnitTestCase
 import org.junit.*
 
 /**
  * Test the {@link User} domain class
  */
-@TestMixin(GrailsUnitTestMixin)
-class UserTests {
+class UserTests extends GrailsUnitTestCase {
+
+    void setUp() {
+        // codecs are not loaded by default into tests
+        super.setUp()
+        loadCodec(SHA1Codec)
+    }
 
     void testValidationFailsIfAliasIsTooShort() {
         // set up a user with an alias that is too short
@@ -35,5 +41,52 @@ class UserTests {
 
         // test for success
         assert(aliasTestUser.validate())
+    }
+
+    void testValidationFailsForInvalidEmail() {
+        // set up a user with an invalid email address
+        def email = "i don't want to share my email with the likes of you"
+        def passwordSalt = "e22fbb3a-b8a3-477a-9818-1a58c6893cb5"
+        def emailTestUser = new User(
+            alias: "emailh8r",
+            email: email,
+            passwordSalt: passwordSalt,
+            passwordHash: ("changeme" + passwordSalt + email).encodeAsSHA1()
+        )
+
+        // mock the domain class
+        mockForConstraintsTests(User, [emailTestUser])
+
+        // test for failure
+        assertFalse(emailTestUser.validate())
+        assert(emailTestUser.hasErrors())
+        emailTestUser.clearErrors()
+
+        // fix the alias length (more dolan)
+        emailTestUser.email = "emailh8r@mailinator.com"
+
+        // test for success
+        assert(emailTestUser.validate())
+    }
+
+    void testValidationFailsForInvalidPassword() {
+        // set up a working user account
+        def changePasswordTestUser = new User(
+            alias: "cooperative user",
+            email: "admin@torpidity.org"
+        )
+        // mock the domain class
+        mockForConstraintsTests(User, [changePasswordTestUser])
+
+        // test for failure
+        assertFalse(changePasswordTestUser.validate())
+        assert(changePasswordTestUser.hasErrors())
+        changePasswordTestUser.clearErrors()
+
+        // assign the user's password (thanks XKCD 936)
+        changePasswordTestUser.changePassword("correct horse battery staple")
+
+        // test for success
+        assert(changePasswordTestUser.validate())
     }
 }
