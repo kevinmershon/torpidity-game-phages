@@ -3,6 +3,10 @@ package org.torpidity.core
 class DummyClusters {
     private static boolean isSetUp = false
 
+    static def reset() {
+        isSetUp = false
+    }
+
     static def setUp() {
         if (isSetUp)
             return
