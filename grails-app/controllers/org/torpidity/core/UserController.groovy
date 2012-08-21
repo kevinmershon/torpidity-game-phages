@@ -43,6 +43,16 @@ class UserController {
         // Find the user with the specified email
         def user = User.findByEmail(params["email"])
 
+        def redirectToLogin = {
+            // Redirect back to the login screen, with an error message
+            flash.loginFailed = true
+            redirect(controller: "user", action: "login")
+        }
+        if (!user || user.isDisabled) {
+            redirectToLogin()
+            return
+        }
+
         // Validate the password
         def hashedPassword = userService.hashPassword(user.email,
             params["password"], user.passwordSalt)
@@ -52,9 +62,8 @@ class UserController {
             session.user = user
             redirect(action: "login")
         } else {
-            // Redirect back to the login screen, with an error message
-            flash.loginFailed = true
-            redirect(controller: "user", action: "login")
+            redirectToLogin()
+            return
         }
     }
 
