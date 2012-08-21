@@ -7,6 +7,7 @@ class User {
     String email
     String passwordHash
     String passwordSalt
+    boolean isDisabled
 
     static constraints = {
         alias(minSize: 5, blank: false, unique: true)
@@ -26,6 +27,12 @@ class User {
         pathogens: "creator",
         phages: "creator"
     ]
+
+    // GORM event hook
+    def beforeInsert() {
+        if (this.isDisabled == null)
+            this.isDisabled = false
+    }
 
     String toString() {
         alias
