@@ -27,15 +27,6 @@ class User {
         phages: "creator"
     ]
 
-    /**
-     * Generate a new password hash and salt
-     */
-    def changePassword(newPassword) {
-        this.passwordSalt = UUID.randomUUID().toString()
-        this.passwordHash = (newPassword + this.passwordSalt +
-            this.email).encodeAsSHA1()
-    }
-
     String toString() {
         alias
     }

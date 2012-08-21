@@ -11,8 +11,12 @@ import org.junit.*
  * Test the {@link User} domain class
  */
 class UserTests extends GrailsUnitTestCase {
+    def userService
 
     void setUp() {
+        // provide access to the user service
+        userService = new UserService()
+
         // codecs are not loaded by default into tests
         super.setUp()
         loadCodec(SHA1Codec)
@@ -46,12 +50,14 @@ class UserTests extends GrailsUnitTestCase {
     void testValidationFailsForInvalidEmail() {
         // set up a user with an invalid email address
         def email = "i don't want to share my email with the likes of you"
-        def passwordSalt = "e22fbb3a-b8a3-477a-9818-1a58c6893cb5"
+        def passwordSalt = "salty goodness"
+        def passwordHash = userService.hashPassword(email, "changeme",
+            passwordSalt)
         def emailTestUser = new User(
             alias: "emailh8r",
             email: email,
             passwordSalt: passwordSalt,
-            passwordHash: ("changeme" + passwordSalt + email).encodeAsSHA1()
+            passwordHash: passwordHash
         )
 
         // mock the domain class
@@ -84,7 +90,8 @@ class UserTests extends GrailsUnitTestCase {
         changePasswordTestUser.clearErrors()
 
         // assign the user's password (thanks XKCD 936)
-        changePasswordTestUser.changePassword("correct horse battery staple")
+        userService.changePassword(changePasswordTestUser,
+            "correct horse battery staple")
 
         // test for success
         assert(changePasswordTestUser.validate())

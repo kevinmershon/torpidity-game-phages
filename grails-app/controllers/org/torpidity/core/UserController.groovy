@@ -4,13 +4,34 @@ class UserController {
 
     def scope = "singleton"
 
+    // injected
+    def userService
+
+    /**
+     * Change the password for the logged-in user
+     */
+    def changePassword(oldPassword, newPassword) {
+        def user = session.user
+
+        // Verify the old password
+        def oldPasswordHash = userService.hashPassword(user.email, oldPassword,
+            user.passwordSalt)
+        if (oldPasswordHash != user.passwordHash) {
+            flash.passwordChangeFailed = true
+        } else {
+            // Change the password
+            userService.changePassword(user, newPassword)
+            user.save(flush: true, failOnError: true)
+        }
+    }
+
     /**
      * Show the login page
      */
     def login() {
         // TODO -- Redirect to the logged in page
         if (session.user) {
-            // go somewhere
+            // go somewhere else
             //redirect(controller: "afterLoginController", action: "action")
         }
     }
