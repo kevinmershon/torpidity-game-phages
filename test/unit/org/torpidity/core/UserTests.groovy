@@ -17,7 +17,7 @@ class UserTests extends GrailsUnitTestCase {
         // provide access to the user service
         userService = new UserService()
 
-        // codecs are not loaded by default into tests
+        // codecs are not loaded by default into unit tests
         super.setUp()
         loadCodec(SHA1Codec)
     }
