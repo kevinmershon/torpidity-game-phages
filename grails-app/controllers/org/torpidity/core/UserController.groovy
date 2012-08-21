@@ -41,11 +41,11 @@ class UserController {
      */
     def doLogin() {
         // Find the user with the specified email
-        def user = User.findByEmail(params["username"])
+        def user = User.findByEmail(params["email"])
 
         // Validate the password
-        def hashedPassword = (params["password"] + user.passwordSalt +
-            params["email"]).encodeAsSHA1()
+        def hashedPassword = userService.hashPassword(user.email,
+            params["password"], user.passwordSalt)
 
         if (hashedPassword == user.passwordHash) {
             // Redirect to the logged in page
